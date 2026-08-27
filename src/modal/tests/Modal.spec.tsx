@@ -189,6 +189,76 @@ describe('n-modal', () => {
     wrapper.unmount()
   })
 
+  it('should work with confirm preset action callbacks', async () => {
+    const onPositiveClick = vi.fn()
+    const positiveWrapper = mountModal({
+      show: true,
+      modalProps: {
+        preset: 'confirm',
+        title: 'test',
+        positiveText: 'ok',
+        onPositiveClick
+      }
+    })
+    await nextTick()
+    document
+      .querySelector('.n-dialog__action button')
+      ?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await nextTick()
+    expect(onPositiveClick).toHaveBeenCalledTimes(1)
+    positiveWrapper.unmount()
+
+    const onNegativeClick = vi.fn()
+    const negativeWrapper = mountModal({
+      show: true,
+      modalProps: {
+        preset: 'confirm',
+        title: 'test',
+        negativeText: 'cancel',
+        onNegativeClick
+      }
+    })
+    await nextTick()
+    document
+      .querySelector('.n-dialog__action button')
+      ?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await nextTick()
+    expect(onNegativeClick).toHaveBeenCalledTimes(1)
+    negativeWrapper.unmount()
+
+    const onClose = vi.fn()
+    const closeWrapper = mountModal({
+      show: true,
+      modalProps: {
+        preset: 'confirm',
+        title: 'test',
+        onClose
+      }
+    })
+    await nextTick()
+    document.querySelector<HTMLElement>('.n-dialog .n-base-close')?.click()
+    await nextTick()
+    expect(onClose).toHaveBeenCalledTimes(1)
+    closeWrapper.unmount()
+  })
+
+  it('should work with `close` prop on card preset only once', async () => {
+    const onClose = vi.fn()
+    const wrapper = mountModal({
+      show: true,
+      modalProps: {
+        preset: 'card',
+        closable: true,
+        onClose
+      }
+    })
+    await nextTick()
+    document.querySelector<HTMLElement>('.n-card .n-base-close')?.click()
+    await nextTick()
+    expect(onClose).toHaveBeenCalledTimes(1)
+    wrapper.unmount()
+  })
+
   it('should work with `content-scrollable` prop on card preset', async () => {
     const wrapper = mountModal({
       modalProps: {
